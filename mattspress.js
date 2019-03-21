@@ -1,5 +1,6 @@
 const http = require("http");
-const micro = require("micro");
+
+const router = require('./router');
 
 class Mattspress {
   constructor() {
@@ -14,8 +15,10 @@ class Mattspress {
         res.end(JSON.stringify(input));
       };
 
-      this.requestSwitch(req, res);
+      router(req, res, this.middleWareReducer, this.middleware, [this.gets, this.posts]);
     };
+
+   
 
     this.middleware = [];
     this.gets = {};
@@ -41,8 +44,8 @@ class Mattspress {
     this.posts = { ...this.gets, [url]: cb };
   }
 
-  middleWareReducer(req, res) {
-    this.middleware.reduce((acc, mw, i) => {
+  middleWareReducer(req, res, middleware) {
+    middleware.reduce((acc, mw, i) => {
       let called = false;
 
       const next = input => {
@@ -60,42 +63,6 @@ class Mattspress {
 
       return acc;
     }, []);
-  }
-
-  async requestSwitch(req, res) {
-    const gets = Object.entries(this.gets);
-    const posts = Object.entries(this.posts);
-
-    switch (req.method) {
-      case "GET":
-        try {
-          this.middleWareReducer(req, res);
-        } catch (e) {
-          return console.log(e);
-        }
-        gets.forEach(([route, cb]) => {
-          if (route === req.url) {
-            cb(req, res);
-          }
-        });
-        break;
-
-      case "POST":
-        const body = await micro.json(req);
-        req.body = body;
-        try {
-          this.middleWareReducer(req, res);
-        } catch (e) {
-          return console.log(e);
-        }
-
-        posts.forEach(([route, cb]) => {
-          if (route === req.url) {
-            cb(req, res);
-          }
-        });
-        break;
-    }
   }
 }
 
