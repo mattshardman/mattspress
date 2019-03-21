@@ -1,6 +1,6 @@
 {
   "name": "mattspress",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,8 +10,6 @@
   "author": "Matt Hardman",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.18.0",
-    "body-parser": "^1.18.3",
     "micro": "^9.3.3"
   }
 }
